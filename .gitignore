@@ -1,0 +1,16 @@
+# User
+.env
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# macOS files
+.DS_Store
+
+# Windows files
+Thumbs.db
+
+# IDE
+.idea/

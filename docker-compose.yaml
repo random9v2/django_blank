@@ -1,0 +1,50 @@
+version: "3.8"
+services:
+
+  # Database Postgres
+  db:
+    env_file:
+      - .env
+    image: postgres
+    volumes:
+       - ./data/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+       - POSTGRES_DB=postgres
+       - POSTGRES_USER=postgres
+       - POSTGRES_PASSWORD=postgres
+    container_name: postgres_db
+
+  # Redis
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  # Django application
+  app:
+    build: .
+    volumes:
+      - .:/django
+    ports:
+      - "8000:8000"
+    image: app:django
+    container_name: django_app
+    # Wait for db and start server
+    command: sh -c 'while ! nc -z db 5432; do sleep 1; done; python manage.py runserver 0.0.0.0:8000'  # add '0.0.0.0' to allowed hosts in settings.py
+    depends_on:
+      - db
+
+  # Celery
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A core worker -l DEBUG
+    volumes:
+      - .:/django
+    container_name: celery
+    depends_on:
+      - db
+      - redis
+      - app
