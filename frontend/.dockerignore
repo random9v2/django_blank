@@ -1,0 +1,2 @@
+# Do not overwrite in docker build
+app/node_modules
