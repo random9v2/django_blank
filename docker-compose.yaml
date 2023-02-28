@@ -23,9 +23,9 @@ services:
 
   # Django application
   app:
-    build: .
+    build: backend
     volumes:
-      - .:/django
+      - ./backend:/django
     ports:
       - "8000:8000"
     image: app:django
@@ -42,7 +42,7 @@ services:
       context: .
     command: celery -A core worker -l DEBUG
     volumes:
-      - .:/django
+      - ./backend:/django
     container_name: celery
     depends_on:
       - db
